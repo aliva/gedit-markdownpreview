@@ -1,0 +1,9 @@
+[Plugin]
+Loader=python3
+Module=markdownpreview
+IAge=3
+Name=Markdown Preview
+Description=A side by side markdown preview for gedit
+Authors=Ali Vakilzade <ali@vakilzade.com>
+Copyright=Copyright © 2019 Ali Vakilzade <ali@vakilzade.com>
+Website=http://www.gedit.org
