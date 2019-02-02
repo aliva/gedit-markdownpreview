@@ -22,7 +22,6 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
     def do_activate(self):
         self.scrolledwindow = self.view.get_parent()
         self.webview = None
-        self.signal_handlers = [None, None, None]
 
         buffer = self.view.get_buffer()
         buffer.connect('notify::language', self.language_changed)
