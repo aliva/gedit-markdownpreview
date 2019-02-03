@@ -1,5 +1,7 @@
-from gi.repository import GObject, Gedit, WebKit2, Gtk
+from gi.repository import Gedit, GObject, Gtk, WebKit2
 from markdown import markdown
+from markdown.extensions import Extension
+from markdown.treeprocessors import Treeprocessor
 
 scrolljs = """
 height = document.body.scrollHeight;
@@ -9,6 +11,18 @@ scroll({{
     behavior: 'smooth',
 }});
 """
+
+
+class AutoDirection(Treeprocessor):
+    def run(self, root):
+        for element in root.iter('p'):
+            element.set('dir', 'auto')
+
+
+class AutoDirectionExtension(Extension):
+    def extendMarkdown(self, md, md_globals):
+        md.treeprocessors.add('autodirection', AutoDirection(md), '_end')
+        md.registerExtension(self)
 
 
 class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
@@ -59,7 +73,7 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
         )
         text = markdown(
             text,
-            extensions=['codehilite', 'fenced_code'],
+            extensions=['codehilite', 'fenced_code', AutoDirectionExtension()],
             extension_configs={
                 'codehilite': {
                     'linenums': False,
