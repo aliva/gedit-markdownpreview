@@ -1,0 +1,22 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="github-markdown.css">
+<style>$style</style>
+
+<article class="markdown-body">
+    $content
+</article>
+
+<script>
+function scrollWebkit(pos){
+    if (pos > 0.8) {
+        pos = 0.95
+    }
+    height = document.body.scrollHeight;
+    pos = pos * height;
+    scroll({
+        top: pos,
+        behavior: 'smooth',
+    });
+}
+scrollWebkit($scroll_position)
+</script>

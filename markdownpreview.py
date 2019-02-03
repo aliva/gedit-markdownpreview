@@ -1,16 +1,10 @@
+import os
+from string import Template
+
 from gi.repository import Gedit, GObject, Gtk, WebKit2
 from markdown import markdown
 from markdown.extensions import Extension
 from markdown.treeprocessors import Treeprocessor
-
-scrolljs = """
-height = document.body.scrollHeight;
-pos = {value} * height;
-scroll({{
-    top: pos,
-    behavior: 'smooth',
-}});
-"""
 
 
 class AutoDirection(Treeprocessor):
@@ -37,6 +31,9 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
         self.scrolledwindow = self.view.get_parent()
         self.webview = None
 
+        self.style_template = None
+        self.html_template = None
+
         buffer = self.view.get_buffer()
         buffer.connect('notify::language', self.language_changed)
         self.language_changed(buffer, None)
@@ -49,7 +46,7 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
 
         lang_id = language.get_id()
 
-        if self.webview is None and lang_id == 'markdown':
+        if lang_id == 'markdown':
             self.webview = WebKit2.WebView()
 
             buffer.connect('changed', self.changed)
@@ -62,16 +59,25 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
 
             self.webview.show_all()
             self.changed(buffer)
-        elif self.webview:
+        else:
             self.do_deactivate()
 
     def changed(self, buffer):
+        plugin_dir = os.path.dirname(__file__)
+        if self.style_template is None:
+            style_path = os.path.join(plugin_dir, 'style.css')
+            self.style_template = open(style_path, 'r').read()
+        if self.html_template is None:
+            html_path = os.path.join(plugin_dir, 'template.html')
+            self.html_template = open(html_path, 'r').read()
+
+
         text = buffer.get_text(
             buffer.get_start_iter(),
             buffer.get_end_iter(),
             True,
         )
-        text = markdown(
+        html = markdown(
             text,
             extensions=['codehilite', 'fenced_code', AutoDirectionExtension()],
             extension_configs={
@@ -81,9 +87,12 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
                 }
             }
         )
-        value = self.get_scroller_pos()
-        text = text + "<script>" + scrolljs.format(value=value) + "</script>"
-        self.webview.load_html(text)
+        html = Template(self.html_template).substitute(
+            content=html,
+            style=self.style_template,
+            scroll_position=self.get_scroller_pos(),
+        )
+        self.webview.load_html(html)
         self.scrolled(None)
 
     def get_scroller_pos(self):
@@ -92,19 +101,20 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
         return value
 
     def scrolled(self, adjustment):
-        value = self.get_scroller_pos()
-        self.webview.run_javascript(scrolljs.format(value=value))
+        scroll_position = self.get_scroller_pos()
+        self.webview.run_javascript("scrollWebkit(%s)" % scroll_position)
 
     def do_deactivate(self):
-        self.webview.destroy()
-        self.webview = None
+        if self.webview:
+            self.webview.destroy()
+            self.webview = None
 
-        buffer = self.view.get_buffer()
-        buffer.disconnect_by_func(self.changed)
+            buffer = self.view.get_buffer()
+            buffer.disconnect_by_func(self.changed)
 
-        adjustment = self.scrolledwindow.get_vadjustment()
-        adjustment.disconnect_by_func(self.scrolled)
-        adjustment.disconnect_by_func(self.scrolled)
+            adjustment = self.scrolledwindow.get_vadjustment()
+            adjustment.disconnect_by_func(self.scrolled)
+            adjustment.disconnect_by_func(self.scrolled)
 
     def do_update_state(self):
         pass
