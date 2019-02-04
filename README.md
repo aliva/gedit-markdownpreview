@@ -7,3 +7,8 @@ mkdir -p ~/.local/share/gedit/plugins/
 cd ~/.local/share/gedit/plugins/
 git clone git@github.com:aliva/gedit-markdownpreview.git markdownpreview
 ```
+
+You need to install `python3-markdown` for this plugin.
+
+Tested on gedit 3.30.2
+
