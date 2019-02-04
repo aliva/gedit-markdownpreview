@@ -12,3 +12,6 @@ You need to install `python3-markdown` for this plugin.
 
 Tested on gedit 3.30.2
 
+## Screenshot
+
+![screenshot](/screenshot.png)
