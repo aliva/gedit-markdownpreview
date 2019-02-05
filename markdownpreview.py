@@ -79,7 +79,7 @@ class MarkdownPreviewViewActivatable(GObject.Object, Gedit.ViewActivatable):
         )
         html = markdown(
             text,
-            extensions=['codehilite', 'fenced_code', AutoDirectionExtension()],
+            extensions=['codehilite', 'fenced_code', 'tables', AutoDirectionExtension()],
             extension_configs={
                 'codehilite': {
                     'linenums': False,
