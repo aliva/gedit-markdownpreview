@@ -53,12 +53,12 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         action.connect('activate', self.menu_button_handler)
         self.window.add_action(action)
 
-        self.views = {}
+        self.webviews = {}
         self.style_template = None
         self.html_template = None
 
     def do_deactivate(self):
-        for view in self.views:
+        for view in self.webviews:
             self.disable_preview(view)
 
     def do_update_state(self):
@@ -73,11 +73,9 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         if view is None:
             return
 
-        if view not in self.views:
+        if view not in self.webviews:
             buffer = view.get_buffer()
-            self.views[view] = {
-                'webview': None
-            }
+            self.webviews[view] = None
             buffer.connect('notify::language', self.toggle_preview, view)
 
         self.toggle_preview(None, None, view)
@@ -90,7 +88,7 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 
         lang_id = language.get_id()
 
-        if lang_id == 'markdown' and self.views[view]['webview'] is None:
+        if lang_id == 'markdown' and self.webviews[view] is None:
             self.enable_preview(view)
         else:
             self.disable_preview(view)
@@ -100,7 +98,7 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         scrolledwindow = self.get_scrolledwindow(view)
 
         webview = WebKit2.WebView()
-        self.views[view]['webview'] = webview
+        self.webviews[view] = webview
 
         buffer.connect('changed', self.buffer_changed, view)
 
@@ -115,9 +113,9 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         self.buffer_changed(buffer, view)
 
     def disable_preview(self, view):
-        if self.views[view]['webview']:
-            self.views[view]['webview'].destroy()
-            self.views[view]['webview'] = None
+        if self.webviews[view]:
+            self.webviews[view].destroy()
+            self.webviews[view] = None
 
             buffer = view.get_buffer()
             buffer.disconnect_by_func(self.buffer_changed)
@@ -162,7 +160,7 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             style=self.style_template,
             scroll_position=self.get_scroller_pos(view),
         )
-        self.views[view]['webview'].load_html(html)
+        self.webviews[view].load_html(html)
         self.buffer_scrolled(None, view)
 
     def get_scroller_pos(self, view):
@@ -172,7 +170,7 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 
     def buffer_scrolled(self, adjustment, view):
         scroll_position = self.get_scroller_pos(view)
-        webview = self.views[view]['webview']
+        webview = self.webviews[view]
         webview.run_javascript("scrollWebkit(%s)" % scroll_position)
 
     def get_scrolledwindow(self, view):
