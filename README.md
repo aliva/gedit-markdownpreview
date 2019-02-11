@@ -12,6 +12,10 @@ You need to install `python3-markdown` for this plugin.
 
 Tested on gedit 3.30.2
 
+## Usage
+
+When viewing a markdown file press `ctrl+alt+m` to toggle markdown preview
+
 ## Screenshot
 
 ![screenshot](/screenshot.png)
