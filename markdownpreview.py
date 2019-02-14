@@ -117,12 +117,15 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             self.webviews[view].destroy()
             self.webviews[view] = None
 
-            buffer = view.get_buffer()
-            buffer.disconnect_by_func(self.buffer_changed)
+            try:
+                buffer = view.get_buffer()
+                buffer.disconnect_by_func(self.buffer_changed)
 
-            adjustment = self.get_scrolledwindow(view).get_vadjustment()
-            adjustment.disconnect_by_func(self.buffer_scrolled)
-            adjustment.disconnect_by_func(self.buffer_scrolled)
+                adjustment = self.get_scrolledwindow(view).get_vadjustment()
+                adjustment.disconnect_by_func(self.buffer_scrolled)
+                adjustment.disconnect_by_func(self.buffer_scrolled)
+            except TypeError:
+                pass
 
     def buffer_changed(self, buffer, view):
         plugin_dir = os.path.dirname(__file__)
