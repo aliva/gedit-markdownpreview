@@ -166,9 +166,9 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     def get_scroller_pos(self, view):
         adj = self.get_scrolledwindow(view).get_vadjustment()
         value_limit = adj.get_upper() - adj.get_lower() - adj.get_page_size()
+        if value_limit == 0:
+            return 0
         value = adj.get_value() / value_limit
-        print(adj.get_value(), adj.get_upper(), adj.get_lower())
-        print(value)
         return value
 
     def buffer_scrolled(self, adjustment, view):
