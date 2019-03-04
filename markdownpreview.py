@@ -1,10 +1,16 @@
 import os
 from string import Template
 
-from gi.repository import Gedit, GObject, Gtk, WebKit2, Gio
+import gi
 from markdown import markdown
 from markdown.extensions import Extension
 from markdown.treeprocessors import Treeprocessor
+
+gi.require_version('WebKit2', '4.0')
+
+from gi.repository import Gedit, Gio, GObject, Gtk, WebKit2  # isort:skip
+
+
 
 
 class AutoDirection(Treeprocessor):
