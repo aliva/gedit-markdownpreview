@@ -152,9 +152,8 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         html = markdown(
             text,
             extensions=[
+                'extra',
                 'codehilite',
-                'fenced_code',
-                'tables',
                 AutoDirectionExtension(),
             ],
             extension_configs={
