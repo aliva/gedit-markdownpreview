@@ -23,7 +23,7 @@ This plugin supports standard Markdown, plus:
 - [Footnotes](https://python-markdown.github.io/extensions/footnotes/)
 - [Tables](https://python-markdown.github.io/extensions/tables/)
 
-With 0ptional `pymdown-extensions` support:   
+With optional `pymdown-extensions`:   
 - [Caret](https://facelessuser.github.io/pymdown-extensions/extensions/caret/) superscripting
 - [Better Emphasis](https://facelessuser.github.io/pymdown-extensions/extensions/betterem/) for bold, itallic, and underscore
 - [SuperFences](https://facelessuser.github.io/pymdown-extensions/extensions/superfences/) Improved Fenced Code Blocks
