@@ -1,6 +1,8 @@
 import os
 from string import Template
 
+import importlib.util
+
 import gi
 from markdown import markdown
 from markdown.extensions import Extension
@@ -149,21 +151,40 @@ class MarkdownPreviewWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             buffer.get_end_iter(),
             True,
         )
-        html = markdown(
-            text,
-            extensions=[
-                'codehilite',
-                'fenced_code',
-                'tables',
-                AutoDirectionExtension(),
-            ],
-            extension_configs={
-                'codehilite': {
-                    'linenums': False,
-                    'noclasses': True,
+        if importlib.util.find_spec('pymdownx') is not None:
+            html = markdown(
+                text,
+                extensions=[
+                    'pymdownx.caret',
+                    'pymdownx.extra',
+                    'pymdownx.mark',
+                    'pymdownx.tasklist',
+                    'pymdownx.tilde',
+                    'codehilite',
+                    AutoDirectionExtension(),
+                ],
+                extension_configs={
+                    'codehilite': {
+                        'linenums': False,
+                        'noclasses': True,
+                    }
                 }
-            }
-        )
+            )
+        else:
+            html = markdown(
+                text,
+                extensions=[
+                    'extra',
+                    'codehilite',
+                    AutoDirectionExtension(),
+                ],
+                extension_configs={
+                    'codehilite': {
+                        'linenums': False,
+                        'noclasses': True,
+                    }
+                }
+            )
         html = Template(self.html_template).substitute(
             content=html,
             style=self.style_template,
