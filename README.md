@@ -1,6 +1,9 @@
 # Gedit Markdown Preview
 
 ## Install
+
+* On Arch Linux you can use [AUR](https://aur.archlinux.org/packages/gedit-markdownpreview-git/) to install this plugin
+
 This plugin depends on the `python3-markdown` package (install via your preferred method)
 
 ```sh
